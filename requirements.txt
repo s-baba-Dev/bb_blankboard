@@ -1,0 +1,6 @@
+os
+fastapi
+uvicorn
+jinja2
+markdown
+python-multipart
