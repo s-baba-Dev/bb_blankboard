@@ -1,0 +1,63 @@
+{% extends "base_admin.html" %}
+
+{% block title %}編集 - 管理者{% endblock %}
+
+{% block content %}
+<h1 class="text-3xl font-bold mb-6">記事編集</h1>
+
+<div class="bg-white p-8 rounded-lg shadow">
+    <form action="/admin/posts/{{ post.id }}/edit" method="post">
+
+        <!-- タイトル -->
+        <label class="block font-semibold mb-2">タイトル</label>
+        <input type="text" name="title" required value="{{ post.title }}"
+               class="w-full border border-gray-300 rounded px-3 py-2 mb-6">
+
+        <!-- 本文 -->
+        <label class="block font-semibold mb-2">本文</label>
+
+        <div id="editor" class="mb-6"></div>
+
+        <input type="hidden" name="content" id="content-hidden">
+
+        <button type="submit"
+                class="px-6 py-3 bg-blue-600 text-white rounded hover:bg-blue-700">
+            更新する
+        </button>
+    </form>
+</div>
+
+<a href="/admin/posts" class="text-blue-500 hover:text-blue-400 mt-6 block">← 一覧に戻る</a>
+
+<!-- Toast UI Editor CSS -->
+<link rel="stylesheet" href="https://uicdn.toast.com/editor/3.1.2/toastui-editor.min.css">
+<link rel="stylesheet" href="https://uicdn.toast.com/tui-color-picker/latest/tui-color-picker.css">
+<link rel="stylesheet"
+      href="https://uicdn.toast.com/editor-plugin-color-syntax/latest/toastui-editor-plugin-color-syntax.min.css">
+
+<!-- Toast UI Editor JS -->
+<script src="https://uicdn.toast.com/editor/3.1.2/toastui-editor-all.min.js"></script>
+<script src="https://uicdn.toast.com/tui-color-picker/latest/tui-color-picker.min.js"></script>
+
+<!-- 必須：ColorSyntax plugin（最新 / 正しいURL） -->
+<script src="https://uicdn.toast.com/editor-plugin-color-syntax/latest/toastui-editor-plugin-color-syntax.min.js"></script>
+
+<script>
+    const editor = new toastui.Editor({
+        el: document.querySelector('#editor'),
+        height: '600px',
+        initialEditType: 'wysiwyg',
+
+        /* ★最適解：tojson を使うだけで全部解決！！ */
+        initialValue: {{ post.content | tojson | safe }},
+
+        plugins: [toastui.Editor.plugin.colorSyntax]
+    });
+
+    document.querySelector("form").addEventListener("submit", () => {
+        document.querySelector("#content-hidden").value = editor.getMarkdown();
+    });
+</script>
+
+{% endblock %}
+

@@ -1,0 +1,49 @@
+{% extends "base_admin.html" %}
+
+{% block title %}管理者：{{ post.title }}{% endblock %}
+
+{% block content %}
+
+<h1 class="text-3xl font-bold mb-4">{{ post.title }}</h1>
+
+<!-- 日付 + 操作ボタンを横並び -->
+<div class="flex justify-between items-center mb-6">
+
+    <!-- 日付 -->
+    <p class="text-gray-500">
+        {{ post.created_at }}
+    </p>
+
+    <!-- 編集/削除ボタン（右寄せ） -->
+    <div class="flex space-x-3">
+
+        <a href="/admin/posts/{{ post.id }}/edit"
+        class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">
+            編集
+        </a>
+
+        <form action="/admin/posts/{{ post.id }}/delete" method="post"
+            onsubmit="return confirm('本当に削除しますか？');">
+
+            <button class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition">
+                削除
+            </button>
+        </form>
+
+    </div>
+
+</div>
+
+<!-- 本文（白カード） -->
+<div class="bg-white p-8 rounded-lg shadow mb-8">
+    <div class="prose max-w-none">
+        {{ post_html | safe }}
+    </div>
+</div>
+
+<!-- 戻る -->
+<div class="mt-4">
+    <a href="/admin/posts" class="text-blue-500 hover:text-blue-400">← 一覧に戻る</a>
+</div>
+
+{% endblock %}

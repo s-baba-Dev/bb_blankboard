@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}管理者 - B.B. BlankBoard{% endblock %}</title>
+
+    <!-- Tailwind -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Toast UI Editor CSS（JS は create 側で読む） -->
+    <link rel="stylesheet" href="https://uicdn.toast.com/editor/3.1.2/toastui-editor.min.css">
+    <link rel="stylesheet" href="https://uicdn.toast.com/tui-color-picker/latest/tui-color-picker.css">
+    <link rel="stylesheet" href="https://uicdn.toast.com/editor-plugin-color-syntax/latest/toastui-editor-plugin-color-syntax.min.css">
+
+</head>
+
+<body class="bg-gray-100">
+
+<header class="bg-blue-900 text-white py-4 shadow">
+    <div class="max-w-5xl mx-auto px-4 flex justify-between items-center">
+
+        <!-- 左：サイト名 -->
+        <a href="/admin/posts" class="text-2xl font-bold hover:text-gray-300 transition">
+            管理者メニュー
+        </a>
+
+        <!-- 右：メニュー -->
+        <nav class="flex items-center space-x-6 text-lg">
+
+            <a href="/admin/posts" class="hover:text-gray-300">記事一覧</a>
+            <a href="/admin/posts/new" class="hover:text-gray-300">新規投稿</a>
+            <a href="/" class="hover:text-gray-300">一般サイトへ</a>
+
+            <!-- 🔥 ログアウト（赤ボタン） -->
+            <a href="/admin/logout"
+               class="px-4 py-2 ml-3 bg-red-600 hover:bg-red-700 text-white rounded transition">
+                ログアウト
+            </a>
+        </nav>
+
+    </div>
+</header>
+
+<main class="max-w-5xl mx-auto px-4 py-8">
+    {% block content %}{% endblock %}
+</main>
+
+<footer class="bg-blue-900 text-gray-300 py-4 mt-16">
+    <div class="max-w-5xl mx-auto px-4 text-center">
+        <p>&copy; 2025 B.B. BlankBoard 管理者</p>
+    </div>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,25 @@
+{% extends "base_public.html" %}
+{% block title %}{{ post.title }} - B.B. BlankBoard{% endblock %}
+
+{% block content %}
+
+<h1 class="text-3xl font-bold mb-2 text-gray-900">{{ post.title }}</h1>
+
+<p class="text-gray-500 mb-6">{{ post.created_at }}</p>
+
+    <!-- 記事カード -->
+<div class="bg-white text-gray-800 p-8 rounded-lg shadow-lg">
+
+    <!-- Markdown 本文 -->
+    <div class="prose max-w-none">
+        {{ post_html | safe }}
+    </div>
+
+</div>
+
+<!-- 戻る -->
+<div class="mt-8">
+    <a href="/" class="text-blue-500 hover:text-blue-400">← 記事一覧に戻る</a>
+</div>
+
+{% endblock %}
