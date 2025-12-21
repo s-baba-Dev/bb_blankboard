@@ -1,30 +1,58 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
+    <!-- ======================= -->
+    <!-- 基本設定 -->
+    <!-- ======================= -->
     <meta charset="UTF-8">
+
+    <!--
+      各ページで title を上書き可能
+      未指定時は「B.B. BlankBoard」
+    -->
     <title>{% block title %}B.B. BlankBoard{% endblock %}</title>
 
+    <!-- ======================= -->
     <!-- Tailwind CSS -->
+    <!-- ======================= -->
+    <!--
+      一般公開サイト用のスタイル
+      CDN 版 Tailwind を使用
+    -->
     <script src="https://cdn.tailwindcss.com"></script>
 
 </head>
 <body class="bg-gray-100">
 
-    <!-- ========== ヘッダー ========== -->
+    <!-- ================================== -->
+    <!-- ヘッダー -->
+    <!-- ================================== -->
     <header class="bg-gray-900 text-white py-4 shadow">
         <div class="max-w-5xl mx-auto px-4 flex justify-between items-center">
-            <a href="/" class="text-2xl font-bold hover:text-gray-300 transition">
+
+            <!-- サイトトップへのリンク -->
+            <a href="/"
+               class="text-2xl font-bold hover:text-gray-300 transition">
                 B.B. BlankBoard
             </a>
+
         </div>
     </header>
 
-    <!-- ========== メインコンテンツ ========== -->
+    <!-- ================================== -->
+    <!-- メインコンテンツ -->
+    <!-- ================================== -->
+    <!--
+      各ページ（トップ / 記事一覧 / 記事詳細など）で
+      content ブロックを差し替える
+    -->
     <main class="max-w-5xl mx-auto px-4 py-8">
         {% block content %}{% endblock %}
     </main>
 
-    <!-- ========== フッター ========== -->
+    <!-- ================================== -->
+    <!-- フッター -->
+    <!-- ================================== -->
     <footer class="bg-gray-900 text-gray-300 py-4 mt-16">
         <div class="max-w-5xl mx-auto px-4 text-center">
             <p>&copy; 2025 B.B. BlankBoard</p>

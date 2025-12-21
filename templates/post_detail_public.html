@@ -1,25 +1,83 @@
 {% extends "base_public.html" %}
+
+{# ページタイトル：記事タイトルをそのまま title に反映 #}
 {% block title %}{{ post.title }} - B.B. BlankBoard{% endblock %}
 
 {% block content %}
 
-<h1 class="text-3xl font-bold mb-2 text-gray-900">{{ post.title }}</h1>
+<!-- ======================= -->
+<!-- 記事タイトル -->
+<!-- ======================= -->
+<h1 class="text-3xl font-bold mb-4">{{ post.title }}</h1>
 
+<!-- ======================= -->
+<!-- カテゴリ階層表示 -->
+<!-- 記事がどの分類に属しているかを明示 -->
+<!-- ======================= -->
+<p class="text-gray-500 mb-4">
+    カテゴリ：{{ post.category_name }}
+    / {{ post.topic_name }}
+    / {{ post.group_name }}
+</p>
+
+<!-- ======================= -->
+<!-- 投稿日時 -->
+<!-- ======================= -->
 <p class="text-gray-500 mb-6">{{ post.created_at }}</p>
 
-    <!-- 記事カード -->
-<div class="bg-white text-gray-800 p-8 rounded-lg shadow-lg">
-
-    <!-- Markdown 本文 -->
+<!-- ======================= -->
+<!-- 記事本文 -->
+<!-- prose + safe で Markdown → HTML を安全に描画 -->
+<!-- ======================= -->
+<div class="bg-white p-6 rounded-lg shadow leading-relaxed">
     <div class="prose max-w-none">
         {{ post_html | safe }}
     </div>
-
 </div>
 
-<!-- 戻る -->
-<div class="mt-8">
-    <a href="/" class="text-blue-500 hover:text-blue-400">← 記事一覧に戻る</a>
+<!-- ======================= -->
+<!-- 関連記事 -->
+<!-- 同じカテゴリ / トピックなどから抽出 -->
+<!-- ======================= -->
+{% if related_posts %}
+<hr class="my-10">
+
+<section>
+  <h2 class="text-xl font-bold mb-4">関連記事</h2>
+
+  <!--
+    PC では 3 列、モバイルでは 1 列
+    記事カード型のシンプルな一覧
+  -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    {% for r in related_posts %}
+      <a href="/posts/{{ r.id }}"
+         class="block bg-white rounded-lg border border-gray-200 p-4 hover:shadow-md transition">
+
+        <!-- 関連記事タイトル（2行で省略） -->
+        <p class="text-blue-600 font-semibold mb-1 line-clamp-2">
+          {{ r.title }}
+        </p>
+
+        <!-- 投稿日時 -->
+        <p class="text-sm text-gray-500">
+          {{ r.created_at }}
+        </p>
+      </a>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
+<!-- ======================= -->
+<!-- 記事一覧へ戻る -->
+<!-- クエリがあれば検索・絞り込み状態を維持 -->
+<!-- ======================= -->
+<div class="mt-4">
+    <a href="/posts{% if request.url.query %}?{{ request.url.query }}{% endif %}"
+    class="text-blue-500 hover:underline">
+    ← 記事一覧に戻る
+    </a>
 </div>
 
 {% endblock %}

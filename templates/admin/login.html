@@ -3,25 +3,55 @@
 {% block title %}管理者ログイン{% endblock %}
 
 {% block content %}
+
+<!--
+  管理者ログイン画面
+  ・管理画面へ入るための認証フォーム
+  ・ログイン成功後は admin セッションが発行される想定
+-->
 <div class="max-w-md mx-auto bg-white p-8 rounded shadow">
 
+    <!-- 画面タイトル -->
     <h1 class="text-2xl font-bold mb-6">管理者ログイン</h1>
 
+    <!--
+      ログインフォーム
+      ・POST /admin/login に送信
+      ・username / password をサーバー側で検証
+    -->
     <form action="/admin/login" method="post">
 
+        <!-- ユーザーID入力 -->
         <label class="block mb-2 font-semibold">ユーザーID</label>
-        <input type="text" name="username" class="w-full border rounded px-3 py-2 mb-4">
+        <input
+            type="text"
+            name="username"
+            class="w-full border rounded px-3 py-2 mb-4"
+        >
 
+        <!-- パスワード入力 -->
         <label class="block mb-2 font-semibold">パスワード</label>
-        <input type="password" name="password" class="w-full border rounded px-3 py-2 mb-6">
+        <input
+            type="password"
+            name="password"
+            class="w-full border rounded px-3 py-2 mb-6"
+        >
 
-        <button class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">
+        <!-- ログイン実行ボタン -->
+        <button
+            class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
+        >
             ログイン
         </button>
     </form>
 
+    <!--
+      ログイン失敗時のエラーメッセージ表示
+      ・認証エラーなどがある場合のみ表示される
+    -->
     {% if error %}
         <p class="text-red-500 mt-4">{{ error }}</p>
     {% endif %}
 </div>
+
 {% endblock %}

@@ -4,47 +4,158 @@
 
 {% block content %}
 
-<h1 class="text-3xl font-bold mb-6">記事一覧（管理者）</h1>
+<h1 class="text-3xl font-bold mb-6">記事一覧</h1>
 
-<form action="/admin/search" method="get" class="mb-6 flex gap-2">
-    <input 
-        type="text" 
-        name="q" 
-        placeholder="検索キーワード..."
-        class="border border-gray-300 rounded px-3 py-2 w-64"
-    >
-    <button 
-        type="submit"
-        class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-    >
-        検索
-    </button>
-</form>
+<!--
+  検索フォーム
+  ・キーワード検索用
+  ・現在のクエリ状態を保持したまま送信
+-->
+{% include "components/search_form.html" with context %}
 
-{% if search_query %}
+<!--
+  絞り込みセレクト
+  ・カテゴリ / トピック / グループなど
+-->
+{% include "components/filter_select.html" with context %}
+
+<!--
+  ソート順 / 表示件数セレクト
+-->
+{% include "components/sort_limit.html" with context %}
+
+{# =============================== #}
+{# 検索・絞り込み結果メッセージ #}
+{# =============================== #}
+
+{# --- 検索：ヒットあり --- #}
+{# searched=true かつ total>0 の場合のみ表示 #}
+{% if searched and total > 0 %}
 <p class="text-gray-500 mb-4">
-    「{{ search_query }}」の検索結果（{{ posts|length }}件）
+  「{{ search_query }}」の検索結果（{{ total }}件）
 </p>
 {% endif %}
 
-<div class="space-y-6">
-    {% for post in posts %}
-    <a href="/admin/posts/{{ post.id }}" 
-        class="block p-6 bg-white rounded-lg shadow hover:shadow-lg transition">
+{# --- 検索：ヒットなし --- #}
+{% if searched and total == 0 %}
+<p class="text-gray-500 mb-4">
+  「{{ search_query }}」に一致する記事はありません。
+</p>
+{% endif %}
 
-        <h2 class="text-2xl font-semibold text-blue-600 mb-2">
-            {{ post.title }}
+{# --- 絞り込み：検索なし・ヒットあり --- #}
+{% if not searched and filtered and total > 0 %}
+<p class="text-gray-500 mb-4">
+  絞り込み結果（{{ total }}件）
+</p>
+{% endif %}
+
+{# --- 絞り込み：検索なし・ヒットなし --- #}
+{% if not searched and filtered and total == 0 %}
+<p class="text-gray-500 mb-4">
+  選択した条件に一致する記事はありません。
+</p>
+{% endif %}
+
+<!-- ======================= -->
+<!-- 記事カード一覧 -->
+<!-- ======================= -->
+<div class="space-y-6">
+  {% for post in posts %}
+    <!--
+      記事カード全体
+      ・クリックで管理者用記事詳細へ遷移
+      ・現在の検索 / 絞り込み条件（query_params）を引き継ぐ
+    -->
+    <div
+      class="post-card p-6 bg-white rounded-lg shadow hover:shadow-lg transition cursor-pointer"
+      onclick="location.href='/admin/posts/{{ post.id }}?{{ query_params | urlencode }}'"
+    >
+
+    <!-- ======================= -->
+    <!-- タイトル & ステータス -->
+    <!-- ======================= -->
+    <div class="flex items-start justify-between gap-4 mb-2">
+
+        <h2 class="text-2xl font-semibold text-blue-600">
+          {{ post.title }}
         </h2>
 
-        <p class="text-gray-500 text-sm mb-3">
-            {{ post.created_at }}
-        </p>
+        <!--
+          記事ステータス表示エリア
+          ・公開 / 非公開：トグル操作可能
+          ・下書き：操作不可（表示のみ）
+        -->
 
-        <p class="text-gray-700 line-clamp-2">
-            {{ post.content }}
-        </p>
-    </a>
-    {% endfor %}
+        <!-- 公開経験あり（公開 or 非公開） -->
+        {% if post.status in [STATUS_PUBLIC, STATUS_PRIVATE] %}
+        <div class="status-toggle"
+            data-post-id="{{ post.id }}"
+            data-current="{{ post.status }}">
+
+            <!-- 公開ボタン -->
+            <button
+              class="status-btn public {% if post.status == STATUS_PUBLIC %}is-active{% endif %}"
+              data-status="public"
+            >
+              公開
+            </button>
+
+            <!-- 非公開ボタン -->
+            <button
+              class="status-btn private {% if post.status == STATUS_PRIVATE %}is-active{% endif %}"
+              data-status="private"
+            >
+              非公開
+            </button>
+
+        </div>
+
+        <!-- 下書き状態 -->
+        {% elif post.status == STATUS_DRAFT %}
+        <div class="status-toggle is-draft">
+          <!-- 下書きは状態変更不可 -->
+          <button class="status-btn" disabled>下書き</button>
+        </div>
+        {% endif %}
+
+    </div>
+
+    <!-- ======================= -->
+    <!-- 投稿日時 -->
+    <!-- ======================= -->
+    <p class="text-gray-500 text-sm mb-3">
+      {{ post.created_at }}
+    </p>
+
+    <!-- ======================= -->
+    <!-- カテゴリ / トピック / グループ -->
+    <!-- ======================= -->
+    <p class="text-gray-600 text-sm mb-2">
+        <span class="font-semibold">カテゴリ:</span> {{ post.category_name }} /
+        <span class="font-semibold">トピック:</span> {{ post.topic_name }} /
+        <span class="font-semibold">グループ:</span> {{ post.group_name }}
+    </p>
+
+    <!-- ======================= -->
+    <!-- 記事本文プレビュー -->
+    <!-- ======================= -->
+    <!--
+      line-clamp-2 により2行まで表示
+      一覧表示用の軽量プレビュー
+    -->
+    <p class="text-gray-700 line-clamp-2">
+        {{ post.content }}
+    </p>
+
+    </div>
+
+  {% endfor %}
 </div>
+
+<!-- ======================= -->
+<!-- ページネーション -->
+<!-- ======================= -->
+{% include "components/pagination.html" with context %}
 
 {% endblock %}

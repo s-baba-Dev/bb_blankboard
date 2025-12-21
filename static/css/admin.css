@@ -1,0 +1,93 @@
+/* ===== 公開 / 非公開トグル ===== */
+/* 公開・非公開を切り替えるためのトグル全体のコンテナ */
+.status-toggle {
+  display: inline-flex;        /* 横並び */
+  gap: 6px;                    /* ボタン間の余白 */
+  padding: 4px;                /* 外側の余白 */
+  border: 1px solid #e5e7eb;   /* 薄い枠線 */
+  border-radius: 10px;         /* 全体を丸く */
+  background: #ffffff;         /* 白背景 */
+}
+
+/* トグル内の各ボタン（公開・非公開 共通） */
+.status-btn {
+  padding: 6px 14px;
+  font-size: 13px;
+  border-radius: 8px;
+  border: 1px solid transparent; /* active時に枠を出す前提 */
+  background: #f3f4f6;           /* 非アクティブ時の背景 */
+  color: #374151;
+  cursor: pointer;
+  transition: all 0.15s ease;    /* 押した時の自然な変化 */
+  opacity: 0.7;                  /* 非アクティブ感を出す */
+}
+
+/* hover時は少し目立たせる */
+.status-btn:hover {
+  opacity: 1;
+}
+
+/* 現在選択中の状態 */
+.status-btn.is-active {
+  font-weight: 700; /* 強調 */
+  opacity: 1;
+}
+
+/* ========================= */
+/* 公開（緑） */
+/* ========================= */
+.status-btn.public.is-active {
+  background: #dcfce7;     /* 緑系背景 */
+  border-color: #22c55e;   /* 緑の枠 */
+  color: #166534;          /* 濃い緑文字 */
+}
+
+/* ========================= */
+/* 非公開（赤） */
+/* ========================= */
+.status-btn.private.is-active {
+  background: #fee2e2;     /* 赤系背景 */
+  border-color: #ef4444;   /* 赤の枠 */
+  color: #991b1b;          /* 濃い赤文字 */
+}
+
+/* disabled 状態（JSで制御される想定） */
+.status-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+/* ========================= */
+/* 下書き用バッジ */
+/* ========================= */
+/* 「下書き」表示用のラベル */
+.badge {
+  padding: 6px 12px;
+  border-radius: 9999px;  /* 完全な丸 */
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+/* 下書き状態の見た目 */
+.badge-draft {
+  background-color: #f3f4f6; /* gray-100 */
+  color: #374151;           /* gray-700 */
+  border: 1px solid #d1d5db;
+}
+
+/* ========================= */
+/* 下書き状態のトグル */
+/* ========================= */
+/* 下書き時はトグル全体を無効っぽくする */
+.status-toggle.is-draft {
+  background: #f9fafb;
+}
+
+/* 下書き時はボタン操作不可・固定表示 */
+.status-toggle.is-draft .status-btn {
+  background: #e5e7eb;
+  color: #6b7280;
+  font-weight: 700;
+  opacity: 1;
+  cursor: default;
+}

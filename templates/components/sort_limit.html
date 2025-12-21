@@ -1,0 +1,66 @@
+<form method="get" class="mb-6 flex justify-between items-center">
+
+  <!-- ======================= -->
+  <!-- 🔒 状態保持（select以外） -->
+  <!-- ======================= -->
+  <!--
+    並び替え・件数変更を行っても
+    ・検索キーワード
+    ・カテゴリ / トピック / グループ
+    の状態が失われないよう hidden で保持する
+  -->
+  <input type="hidden" name="q" value="{{ q or '' }}">
+  <input type="hidden" name="category_id" value="{{ category_id or '' }}">
+  <input type="hidden" name="topic_id" value="{{ topic_id or '' }}">
+  <input type="hidden" name="group_id" value="{{ group_id or '' }}">
+
+  <!--
+    並び替え・件数変更時は
+    常に 1 ページ目から表示し直す
+  -->
+  <input type="hidden" name="page" value="1">
+
+  <!-- ======================= -->
+  <!-- 並び替え -->
+  <!-- ======================= -->
+  <div class="flex items-center gap-2">
+    <!-- UI 用ラベル（アクセシビリティ & 可読性） -->
+    <label class="text-sm text-gray-600">並び替え</label>
+
+    <!--
+      onchange で即 submit
+      → ボタン不要で直感的に切り替え可能
+    -->
+    <select name="sort" onchange="this.form.submit()"
+            class="border p-1 rounded text-sm">
+
+      <!-- 作成日時：新しい順（デフォルト） -->
+      <option value="created_desc"
+        {% if sort == "created_desc" %}selected{% endif %}>
+        新しい順
+      </option>
+
+      <!-- 作成日時：古い順 -->
+      <option value="created_asc"
+        {% if sort == "created_asc" %}selected{% endif %}>
+        古い順
+      </option>
+    </select>
+  </div>
+
+  <!-- ======================= -->
+  <!-- 表示件数 -->
+  <!-- ======================= -->
+  <!--
+    1ページあたりの表示件数を変更
+    並び替えと同様、即 submit で反映
+  -->
+  <select name="limit" onchange="this.form.submit()"
+          class="border p-1 rounded text-sm">
+    <option value="5"  {% if limit == 5 %}selected{% endif %}>5件</option>
+    <option value="10" {% if limit == 10 %}selected{% endif %}>10件</option>
+    <option value="20" {% if limit == 20 %}selected{% endif %}>20件</option>
+    <option value="50" {% if limit == 50 %}selected{% endif %}>50件</option>
+  </select>
+
+</form>

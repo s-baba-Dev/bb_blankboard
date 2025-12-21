@@ -1,50 +1,102 @@
 {% extends "base_public.html" %}
 
+{# ページタイトル（base_public.html の title を上書き） #}
 {% block title %}記事一覧 - B.B. BlankBoard{% endblock %}
 
 {% block content %}
 
+<!-- ======================= -->
+<!-- ページ見出し -->
+<!-- ======================= -->
 <h1 class="text-3xl font-bold mb-6">記事一覧</h1>
 
-<form action="/search" method="get" class="mb-6">
-    <input 
-        type="text" 
-        name="q" 
-        placeholder="検索キーワード..."
-        class="border border-gray-300 rounded px-3 py-2 w-64"
-    >
-    <button 
-        type="submit"
-        class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-    >
-        検索
-    </button>
-</form>
+<!-- ======================= -->
+<!-- 検索・絞り込み・並び替えUI -->
+<!-- （管理者画面と共通コンポーネント） -->
+<!-- ======================= -->
+{% include "components/search_form.html" with context %}
+{% include "components/filter_select.html" with context %}
+{% include "components/sort_limit.html" with context %}
 
-{% if search_query %}
+{# ======================= #}
+{# 検索結果メッセージ表示 #}
+{# ======================= #}
+
+{# --- 検索：結果あり --- #}
+{% if searched and total > 0 %}
 <p class="text-gray-500 mb-4">
-    「{{ search_query }}」の検索結果（{{ posts|length }}件）
+  「{{ search_query }}」の検索結果（{{ total }}件）
 </p>
 {% endif %}
 
+{# --- 検索：ヒットなし --- #}
+{% if searched and total == 0 %}
+<p class="text-gray-500 mb-4">
+  「{{ search_query }}」に一致する記事はありません。
+</p>
+{% endif %}
+
+{# ======================= #}
+{# 絞り込み結果メッセージ #}
+{# ======================= #}
+
+{# --- 絞り込み：検索なし・結果あり --- #}
+{% if not searched and filtered and total > 0 %}
+<p class="text-gray-500 mb-4">
+  絞り込み結果（{{ total }}件）
+</p>
+{% endif %}
+
+{# --- 絞り込み：検索なし・ヒットなし --- #}
+{% if not searched and filtered and total == 0 %}
+<p class="text-gray-500 mb-4">
+  選択した条件に一致する記事はありません。
+</p>
+{% endif %}
+
+<!-- ======================= -->
+<!-- 記事カード一覧 -->
+<!-- ======================= -->
 <div class="space-y-6">
     {% for post in posts %}
-    <a href="/posts/{{ post.id }}" 
+
+    <!--
+      記事カード全体をリンク化
+      一覧 → 詳細 → 一覧 に戻ったときに
+      検索・絞り込み状態を維持するため query_string を付与
+    -->
+    <a href="/posts/{{ post.id }}{% if query_string %}?{{ query_string }}{% endif %}"
         class="block p-6 bg-white rounded-lg shadow hover:shadow-lg transition">
 
+        <!-- 記事タイトル -->
         <h2 class="text-2xl font-semibold text-blue-600 mb-2">
             {{ post.title }}
         </h2>
 
+        <!-- 投稿日時 -->
         <p class="text-gray-500 text-sm mb-3">
             {{ post.created_at }}
         </p>
 
+        <!-- カテゴリ階層表示 -->
+        <p class="text-gray-600 text-sm mb-2">
+            <span class="font-semibold">カテゴリ:</span> {{ post.category_name }} /
+            <span class="font-semibold">トピック:</span> {{ post.topic_name }} /
+            <span class="font-semibold">グループ:</span> {{ post.group_name }}
+        </p>
+
+        <!-- 記事本文（2行で省略表示） -->
         <p class="text-gray-700 line-clamp-2">
             {{ post.content }}
         </p>
     </a>
+
     {% endfor %}
 </div>
+
+<!-- ======================= -->
+<!-- ページネーション -->
+<!-- ======================= -->
+{% include "components/pagination.html" with context %}
 
 {% endblock %}

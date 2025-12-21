@@ -1,55 +1,117 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
+    <!-- ======================= -->
+    <!-- 基本設定 -->
+    <!-- ======================= -->
     <meta charset="UTF-8">
+
+    <!--
+      各管理画面ごとに title を上書き可能
+      未指定の場合は「管理者 - B.B. BlankBoard」
+    -->
     <title>{% block title %}管理者 - B.B. BlankBoard{% endblock %}</title>
 
-    <!-- Tailwind -->
+    <!-- ======================= -->
+    <!-- Tailwind CSS -->
+    <!-- ======================= -->
+    <!-- CDN 版 Tailwind：管理画面全体のスタイルを担当 -->
     <script src="https://cdn.tailwindcss.com"></script>
 
-    <!-- Toast UI Editor CSS（JS は create 側で読む） -->
+    <!-- ======================= -->
+    <!-- Toast UI Editor CSS -->
+    <!-- ======================= -->
+    <!--
+      記事作成 / 編集画面で使用
+      JS 本体は create / edit 側で読み込む
+    -->
     <link rel="stylesheet" href="https://uicdn.toast.com/editor/3.1.2/toastui-editor.min.css">
     <link rel="stylesheet" href="https://uicdn.toast.com/tui-color-picker/latest/tui-color-picker.css">
     <link rel="stylesheet" href="https://uicdn.toast.com/editor-plugin-color-syntax/latest/toastui-editor-plugin-color-syntax.min.css">
 
-</head>
+    <!-- ======================= -->
+    <!-- 管理画面専用 CSS -->
+    <!-- ======================= -->
+    <!--
+      ・ステータストグル
+      ・管理画面固有の微調整
+      用のスタイル
+    -->
+    <link rel="stylesheet"
+          href="{{ url_for('static', path='css/admin.css') }}?v=1">
 
+</head>
 <body class="bg-gray-100">
 
-<header class="bg-blue-900 text-white py-4 shadow">
-    <div class="max-w-5xl mx-auto px-4 flex justify-between items-center">
+    <!-- ================================== -->
+    <!-- ヘッダー -->
+    <!-- ================================== -->
+    <header class="bg-blue-900 text-white py-4 shadow">
+        <div class="max-w-5xl mx-auto px-4 flex justify-between items-center">
 
-        <!-- 左：サイト名 -->
-        <a href="/admin/posts" class="text-2xl font-bold hover:text-gray-300 transition">
-            管理者メニュー
-        </a>
-
-        <!-- 右：メニュー -->
-        <nav class="flex items-center space-x-6 text-lg">
-
-            <a href="/admin/posts" class="hover:text-gray-300">記事一覧</a>
-            <a href="/admin/posts/new" class="hover:text-gray-300">新規投稿</a>
-            <a href="/" class="hover:text-gray-300">一般サイトへ</a>
-
-            <!-- 🔥 ログアウト（赤ボタン） -->
-            <a href="/admin/logout"
-               class="px-4 py-2 ml-3 bg-red-600 hover:bg-red-700 text-white rounded transition">
-                ログアウト
+            <!-- サイト名 / 管理画面トップへのリンク -->
+            <a href="/admin/posts"
+               class="text-2xl font-bold hover:text-gray-300 transition">
+                B.B. BlankBoard 　管理者メニュー
             </a>
-        </nav>
 
-    </div>
-</header>
+            <!-- ======================= -->
+            <!-- 管理画面ナビゲーション -->
+            <!-- ======================= -->
+            <nav class="flex items-center space-x-6 text-lg">
 
-<main class="max-w-5xl mx-auto px-4 py-8">
-    {% block content %}{% endblock %}
-</main>
+                <!-- 記事一覧 -->
+                <a href="/admin/posts" class="hover:text-gray-300">記事一覧</a>
 
-<footer class="bg-blue-900 text-gray-300 py-4 mt-16">
-    <div class="max-w-5xl mx-auto px-4 text-center">
-        <p>&copy; 2025 B.B. BlankBoard 管理者</p>
-    </div>
-</footer>
+                <!-- 新規投稿 -->
+                <a href="/admin/posts/new" class="hover:text-gray-300">新規投稿</a>
+
+                <!-- カテゴリ / トピック / グループ管理 -->
+                <a href="/admin/posts/category_manage"
+                   class="hover:text-gray-300">カテゴリ管理</a>
+
+                <!-- 一般公開サイトへ -->
+                <a href="/" class="hover:text-gray-300">一般サイトへ</a>
+
+                <!-- ログアウト -->
+                <a href="/admin/logout"
+                   class="px-4 py-2 ml-3 bg-red-600 hover:bg-red-700 text-white rounded transition">
+                    ログアウト
+                </a>
+            </nav>
+
+        </div>
+    </header>
+
+    <!-- ================================== -->
+    <!-- メインコンテンツ -->
+    <!-- ================================== -->
+    <!--
+      各管理画面（一覧 / 作成 / 編集 / 管理）で
+      content ブロックを差し替える
+    -->
+    <main class="max-w-5xl mx-auto px-4 py-8">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- ================================== -->
+    <!-- フッター -->
+    <!-- ================================== -->
+    <footer class="bg-blue-900 text-gray-300 py-4 mt-16">
+        <div class="max-w-5xl mx-auto px-4 text-center">
+            <p>&copy; 2025 B.B. BlankBoard 管理者</p>
+        </div>
+    </footer>
+
+    <!-- ======================= -->
+    <!-- 管理画面共通 JS -->
+    <!-- ======================= -->
+    <!--
+      記事一覧の公開 / 非公開トグル制御用
+      defer で DOM 構築後に実行
+    -->
+    <script src="{{ url_for('static', path='js/admin_status_toggle.js') }}?v=1"
+            defer></script>
 
 </body>
 </html>

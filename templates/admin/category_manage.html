@@ -1,0 +1,189 @@
+{% extends "base_admin.html" %}
+
+{% block title %}カテゴリ管理 - B.B. BlankBoard{% endblock %}
+
+{% block content %}
+<h1 class="text-3xl font-bold mb-6">カテゴリ管理</h1>
+
+<!--
+  3カラム構成
+  左：カテゴリ
+  中：トピック（カテゴリ選択後に表示）
+  右：グループ（トピック選択後に表示）
+-->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+  <!-- ▼ カテゴリ列 -->
+  <div class="p-4 bg-white shadow rounded">
+    <h2 class="text-xl font-semibold mb-4">カテゴリ一覧</h2>
+
+    <!--
+      JS契約:
+      ・id="category-list" を起点にイベントを付与
+      ・category-name クリックでトピックを取得
+    -->
+    <ul id="category-list" class="space-y-2">
+      {% for c in categories %}
+      <li class="flex justify-between items-center bg-gray-100 p-2 rounded">
+        <div class="flex-1">
+          <!--
+            JS契約:
+            ・クリックで loadTopics(categoryId, name) を実行
+            ・data-id を使用してカテゴリIDを取得
+            ・編集モード時は非表示になる
+          -->
+          <span
+            class="category-name category-select cursor-pointer"
+            data-id="{{ c.id }}"
+          >
+            {{ c.name }}
+          </span>
+
+          <!--
+            JS契約:
+            ・編集ボタン押下時に表示
+            ・保存 / キャンセルで再度非表示
+          -->
+          <input
+            type="text"
+            value="{{ c.name }}"
+            class="category-edit hidden border rounded px-2 py-1 w-full"
+            data-id="{{ c.id }}"
+          >
+        </div>
+
+        <!--
+          JS契約:
+          ・edit-btn    : 編集開始
+          ・save-btn    : カテゴリ名保存
+          ・cancel-btn  : 編集キャンセル
+          ・delete-btn  : カテゴリ削除
+        -->
+        <div class="ml-4 flex items-center space-x-2 text-sm whitespace-nowrap">
+          <button class="edit-btn text-blue-500" data-id="{{ c.id }}">編集</button>
+          <button class="save-btn hidden text-blue-500" data-id="{{ c.id }}">保存</button>
+          <button class="cancel-btn hidden text-gray-500" data-id="{{ c.id }}">キャンセル</button>
+          <button class="delete-btn text-red-500" data-id="{{ c.id }}">削除</button>
+        </div>
+      </li>
+      {% endfor %}
+    </ul>
+
+    <!-- ▼ カテゴリ新規追加 -->
+    <!-- JS: create-category-btn クリックでカテゴリ新規作成 -->
+    <div class="mt-4 border-t pt-4">
+      <h3 class="font-semibold text-sm mb-1">カテゴリを追加</h3>
+      <div class="flex space-x-2">
+        <input
+          id="new-category"
+          type="text"
+          class="border rounded px-2 py-1 flex-1"
+          placeholder="例：技術"
+        >
+        <button
+          id="create-category-btn"
+          class="px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700"
+        >
+          追加
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ▼ トピック列 -->
+  <div class="p-4 bg-white shadow rounded">
+    <h2 class="text-xl font-semibold mb-1">トピック一覧</h2>
+
+    <!--
+      JS契約:
+      ・現在選択中のカテゴリ名を表示
+      ・カテゴリ未選択時は案内文を表示
+    -->
+    <p id="current-category" class="text-sm text-gray-500 mb-3">
+      カテゴリを選択してください
+    </p>
+
+    <!--
+      JS契約:
+      ・カテゴリ選択時に topic-list を動的生成
+    -->
+    <ul id="topic-list" class="space-y-2"></ul>
+
+    <!--
+      JS契約:
+      ・カテゴリ選択後に表示される
+      ・選択中カテゴリにトピックを追加
+    -->
+    <div id="topic-create-area" class="mt-4 border-t pt-4 hidden">
+      <h3 class="font-semibold text-sm mb-1">このカテゴリにトピックを追加</h3>
+      <div class="flex space-x-2">
+        <input
+          id="new-topic"
+          type="text"
+          class="border rounded px-2 py-1 flex-1"
+          placeholder="例：FastAPI"
+        >
+        <button
+          id="create-topic-btn"
+          class="px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700"
+        >
+          追加
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ▼ グループ列 -->
+  <div class="p-4 bg-white shadow rounded">
+    <h2 class="text-xl font-semibold mb-1">グループ一覧</h2>
+
+    <!--
+      JS契約:
+      ・現在選択中のトピック名を表示
+      ・トピック未選択時は案内文を表示
+    -->
+    <p id="current-topic" class="text-sm text-gray-500 mb-3">
+      トピックを選択してください
+    </p>
+
+    <!--
+      JS契約:
+      ・トピック選択時に group-list を動的生成
+    -->
+    <ul id="group-list" class="space-y-2"></ul>
+
+    <!--
+      JS契約:
+      ・トピック選択後に表示される
+      ・選択中トピックにグループを追加
+    -->
+    <div id="group-create-area" class="mt-4 border-t pt-4 hidden">
+      <h3 class="font-semibold text-sm mb-1">このトピックにグループを追加</h3>
+      <div class="flex space-x-2">
+        <input
+          id="new-group"
+          type="text"
+          class="border rounded px-2 py-1 flex-1"
+          placeholder="例：基礎"
+        >
+        <button
+          id="create-group-btn"
+          class="px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700"
+        >
+          追加
+        </button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- 管理画面：投稿一覧へ戻る -->
+<a href="/admin/posts" class="text-blue-500 hover:text-blue-400 mt-6 block">← 一覧に戻る</a>
+
+<!--
+  JS:
+  ・カテゴリ / トピック / グループ管理の全イベントを担当
+-->
+<script src="/static/js/category_manage.js"></script>
+{% endblock %}

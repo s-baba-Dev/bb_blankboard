@@ -1,63 +1,227 @@
 {% extends "base_admin.html" %}
 
-{% block title %}編集 - 管理者{% endblock %}
+{% block title %}投稿の編集 - 管理者{% endblock %}
 
 {% block content %}
-<h1 class="text-3xl font-bold mb-6">記事編集</h1>
 
+<h1 class="text-3xl font-bold mb-6">投稿の編集</h1>
+
+<!--
+  投稿編集フォーム
+  ・POST /admin/posts/{post_id}/edit
+  ・基本構造は新規投稿と同じ
+  ・既存データを初期値として反映する点が差分
+-->
 <div class="bg-white p-8 rounded-lg shadow">
     <form action="/admin/posts/{{ post.id }}/edit" method="post">
 
+        <!-- ======================= -->
         <!-- タイトル -->
+        <!-- ======================= -->
+        <!--
+          既存投稿のタイトルを初期値として表示
+        -->
         <label class="block font-semibold mb-2">タイトル</label>
-        <input type="text" name="title" required value="{{ post.title }}"
+        <input type="text" name="title" value="{{ post.title }}" required
                class="w-full border border-gray-300 rounded px-3 py-2 mb-6">
 
+        <!-- ======================= -->
+        <!-- ★ カテゴリ設定（編集版） ★ -->
+        <!-- ======================= -->
+        <!--
+          新規投稿画面と同じUIだが、
+          ・select の selected
+          ・topic / group の初期絞り込み
+          がサーバ側で行われている
+        -->
+        <h2 class="text-xl font-bold mb-4 mt-6">カテゴリ設定</h2>
+
+        <!-- ===== Category ===== -->
+        <div class="mb-6">
+            <label class="block font-semibold mb-1">カテゴリ</label>
+
+            <!--
+              編集時のデフォルトは「既存カテゴリ」
+              （新規作成はユーザーが明示的に選択）
+            -->
+            <label class="mr-4">
+                <input type="radio" name="category_mode" value="existing" checked>
+                既存カテゴリから選択
+            </label>
+            <label>
+                <input type="radio" name="category_mode" value="new">
+                新規カテゴリを作成
+            </label>
+
+            <!--
+              既存カテゴリ select
+              ・post.category_id と一致する option を selected
+            -->
+            <select id="category_select" name="category_id"
+                    class="w-full border border-gray-300 rounded px-3 py-2 mt-2">
+                {% for c in categories %}
+                <option value="{{ c.id }}"
+                    {% if c.id == post.category_id %}selected{% endif %}>
+                    {{ c.name }}
+                </option>
+                {% endfor %}
+            </select>
+
+            <!--
+              新規カテゴリ入力欄
+              ・category_mode === "new" の時のみ JS で表示
+            -->
+            <input type="text" id="new_category_input" name="new_category_name"
+                   class="w-full border border-gray-300 rounded px-3 py-2 mt-2"
+                   placeholder="新しいカテゴリ名を入力"
+                   style="display:none;">
+        </div>
+
+        <!-- ===== Topic ===== -->
+        <div class="mb-6">
+            <label class="block font-semibold mb-1">トピック</label>
+
+            <!--
+              トピックも編集時は既存選択がデフォルト
+            -->
+            <label class="mr-4">
+                <input type="radio" name="topic_mode" value="existing" checked>
+                既存トピックから選択
+            </label>
+            <label>
+                <input type="radio" name="topic_mode" value="new">
+                新規トピックを作成
+            </label>
+
+            <!--
+              初期表示時は
+              ・post.category_id に紐づくトピックのみをサーバ側で描画
+              ・post.topic_id と一致する option を selected
+            -->
+            <select id="topic_select" name="topic_id"
+                    class="w-full border border-gray-300 rounded px-3 py-2 mt-2">
+                {% for t in topics if t.category_id == post.category_id %}
+                <option value="{{ t.id }}"
+                    {% if t.id == post.topic_id %}selected{% endif %}>
+                    {{ t.name }}
+                </option>
+                {% endfor %}
+            </select>
+
+            <!--
+              新規トピック入力欄
+              ・topic_mode === "new" の時のみ表示
+            -->
+            <input type="text" id="new_topic_input" name="new_topic_name"
+                   class="w-full border border-gray-300 rounded px-3 py-2 mt-2"
+                   placeholder="新しいトピック名を入力"
+                   style="display:none;">
+        </div>
+
+        <!-- ===== Group ===== -->
+        <div class="mb-6">
+            <label class="block font-semibold mb-1">グループ</label>
+
+            <label class="mr-4">
+                <input type="radio" name="group_mode" value="existing" checked>
+                既存グループから選択
+            </label>
+            <label>
+                <input type="radio" name="group_mode" value="new">
+                新規グループを作成
+            </label>
+
+            <!--
+              初期表示時は
+              ・post.topic_id に紐づくグループのみを表示
+              ・post.group_id と一致する option を selected
+            -->
+            <select id="group_select" name="group_id"
+                    class="w-full border border-gray-300 rounded px-3 py-2 mt-2">
+                {% for g in groups if g.topic_id == post.topic_id %}
+                <option value="{{ g.id }}"
+                    {% if g.id == post.group_id %}selected{% endif %}>
+                    {{ g.name }}
+                </option>
+                {% endfor %}
+            </select>
+
+            <!--
+              新規グループ入力欄
+              ・group_mode === "new" の時のみ表示
+            -->
+            <input type="text" id="new_group_input" name="new_group_name"
+                   class="w-full border border-gray-300 rounded px-3 py-2 mt-2"
+                   placeholder="新しいグループ名を入力"
+                   style="display:none;">
+        </div>
+
+        <!-- ======================= -->
         <!-- 本文 -->
+        <!-- ======================= -->
+        <!--
+          Toast UI Editor（編集用）
+          ・initialValue に既存本文をセット
+          ・submit 時に Markdown を hidden input に詰める
+        -->
         <label class="block font-semibold mb-2">本文</label>
-
-        <div id="editor" class="mb-6"></div>
-
+        <div id="editor" class="mb-6">{{ post.content }}</div>
         <input type="hidden" name="content" id="content-hidden">
 
-        <button type="submit"
-                class="px-6 py-3 bg-blue-600 text-white rounded hover:bg-blue-700">
+        <!--
+          保存ボタン
+          ・draft  : 下書きとして保存
+          ・public : 更新（公開）
+        -->
+        <button type="submit" name="action" value="draft"
+                class="px-4 py-3 bg-blue-600 text-white rounded hover:bg-blue-700 text-white rounded">
+            下書き保存
+        </button>
+
+        <button type="submit" name="action" value="public"
+                class="px-6 py-3 bg-green-600 text-white rounded hover:bg-green-700 text-white rounded">
             更新する
         </button>
+
     </form>
 </div>
 
-<a href="/admin/posts" class="text-blue-500 hover:text-blue-400 mt-6 block">← 一覧に戻る</a>
+<!-- 編集後、記事詳細（管理者用）に戻る -->
+<a href="/admin/posts/{{ post.id }}"
+    class="text-blue-500 hover:text-blue-400 mt-6 block">← 記事に戻る</a>
 
-<!-- Toast UI Editor CSS -->
-<link rel="stylesheet" href="https://uicdn.toast.com/editor/3.1.2/toastui-editor.min.css">
-<link rel="stylesheet" href="https://uicdn.toast.com/tui-color-picker/latest/tui-color-picker.css">
-<link rel="stylesheet"
-      href="https://uicdn.toast.com/editor-plugin-color-syntax/latest/toastui-editor-plugin-color-syntax.min.css">
-
-<!-- Toast UI Editor JS -->
-<script src="https://uicdn.toast.com/editor/3.1.2/toastui-editor-all.min.js"></script>
-<script src="https://uicdn.toast.com/tui-color-picker/latest/tui-color-picker.min.js"></script>
-
-<!-- 必須：ColorSyntax plugin（最新 / 正しいURL） -->
-<script src="https://uicdn.toast.com/editor-plugin-color-syntax/latest/toastui-editor-plugin-color-syntax.min.js"></script>
+<!-- ======================= -->
+<!-- Toast UI Editor -->
+<!-- ======================= -->
+<script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
 
 <script>
+    // 編集用エディタ初期化
     const editor = new toastui.Editor({
         el: document.querySelector('#editor'),
         height: '600px',
         initialEditType: 'wysiwyg',
-
-        /* ★最適解：tojson を使うだけで全部解決！！ */
-        initialValue: {{ post.content | tojson | safe }},
-
-        plugins: [toastui.Editor.plugin.colorSyntax]
+        // 既存本文を initialValue として設定
+        initialValue: `{{ post.content | replace('\n', '\\n') | safe }}`
     });
 
+    // submit 時に Markdown を hidden input に反映
     document.querySelector("form").addEventListener("submit", () => {
         document.querySelector("#content-hidden").value = editor.getMarkdown();
     });
 </script>
 
-{% endblock %}
+<!--
+  カテゴリ / トピック / グループ情報を JS に受け渡し
+  ・category_control.js が参照
+-->
+<script>
+    window.categories = {{ categories | tojson | safe }};
+    window.topics = {{ topics | tojson | safe }};
+    window.groups = {{ groups | tojson | safe }};
+</script>
 
+<!-- create.html と共通のカテゴリ連動JS -->
+<script src="/static/js/category_control.js"></script>
+
+{% endblock %}

@@ -4,28 +4,61 @@
 
 {% block content %}
 
-<h1 class="text-3xl font-bold mb-4">{{ post.title }}</h1>
+<!-- ======================= -->
+<!-- 記事タイトル -->
+<!-- ======================= -->
+<h1 class="text-3xl font-bold mb-4">
+    {{ post.title }}
+</h1>
 
-<!-- 日付 + 操作ボタンを横並び -->
+<!--
+  記事に紐づく分類情報
+  ・カテゴリ / トピック / グループ を横並びで表示
+-->
+<p class="text-gray-500 mb-4">
+    カテゴリ：{{ post.category_name }}
+    / {{ post.topic_name }}
+    / {{ post.group_name }}
+</p>
+
+<!-- ======================= -->
+<!-- 記事メタ情報 & 操作ボタン -->
+<!-- ======================= -->
 <div class="flex justify-between items-center mb-6">
 
-    <!-- 日付 -->
-    <p class="text-gray-500">
+    <!-- 作成日時 -->
+    <p class="text-gray-500 mb-6">
         {{ post.created_at }}
     </p>
 
-    <!-- 編集/削除ボタン（右寄せ） -->
+    <!--
+      管理者操作エリア
+      ・編集画面への遷移
+      ・削除（確認ダイアログ付き）
+    -->
     <div class="flex space-x-3">
 
-        <a href="/admin/posts/{{ post.id }}/edit"
-        class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">
+        <!-- 記事編集ページへのリンク -->
+        <a
+            href="/admin/posts/{{ post.id }}/edit"
+            class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+        >
             編集
         </a>
 
-        <form action="/admin/posts/{{ post.id }}/delete" method="post"
-            onsubmit="return confirm('本当に削除しますか？');">
-
-            <button class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition">
+        <!--
+          記事削除フォーム
+          ・POST で削除
+          ・誤操作防止の confirm ダイアログ付き
+        -->
+        <form
+            action="/admin/posts/{{ post.id }}/delete"
+            method="post"
+            onsubmit="return confirm('本当に削除しますか？');"
+        >
+            <button
+                class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition"
+            >
                 削除
             </button>
         </form>
@@ -34,16 +67,44 @@
 
 </div>
 
-<!-- 本文（白カード） -->
-<div class="bg-white p-8 rounded-lg shadow mb-8">
+<!-- ======================= -->
+<!-- 記事本文 -->
+<!-- ======================= -->
+<div class="bg-white p-6 rounded-lg shadow leading-relaxed">
+
+    <!--
+      記事本文表示エリア
+      ・Markdown → HTML に変換済みの post_html を表示
+      ・safe を使って HTML をそのまま描画
+      ・Tailwind Typography (prose) を適用
+    -->
     <div class="prose max-w-none">
         {{ post_html | safe }}
     </div>
 </div>
 
-<!-- 戻る -->
+<!-- ======================= -->
+<!-- 一覧へ戻るリンク -->
+<!-- ======================= -->
 <div class="mt-4">
-    <a href="/admin/posts" class="text-blue-500 hover:text-blue-400">← 一覧に戻る</a>
+
+    <!--
+      記事一覧へ戻るリンク
+      ・検索条件 / 絞り込み / ページ番号などの
+        クエリパラメータを保持したまま戻れる設計
+    -->
+    <a
+        href="/admin/posts{% if request.url.query %}?{{ request.url.query }}{% endif %}"
+        class="text-blue-500 hover:underline"
+    >
+        ← 記事一覧に戻る
+    </a>
 </div>
+
+<!--
+  Tailwind Typography プラグイン
+  ・記事本文の見た目（hタグ / p / ul 等）を整えるために使用
+-->
+<script src="https://cdn.tailwindcss.com?plugins=typography"></script>
 
 {% endblock %}

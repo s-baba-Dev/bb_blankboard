@@ -1,0 +1,88 @@
+<form method="get" class="mb-6 flex gap-4 items-center">
+
+  <!-- ======================= -->
+  <!-- 他フォームの状態保持 -->
+  <!-- ======================= -->
+  <!--
+    検索・並び替え・表示件数などの状態を
+    絞り込み操作時にも維持するための hidden パラメータ
+    ※ category / topic / group を変更したら page は 1 に戻す
+  -->
+  <input type="hidden" name="q" value="{{ q or '' }}">
+  <input type="hidden" name="sort" value="{{ sort }}">
+  <input type="hidden" name="limit" value="{{ limit }}">
+  <input type="hidden" name="page" value="1">
+
+  <!-- ======================= -->
+  <!-- カテゴリ絞り込み -->
+  <!-- ======================= -->
+  <!--
+    カテゴリ選択用セレクトボックス
+    ・変更時に即フォーム送信（onchange）
+    ・未選択時は「すべてのカテゴリ」
+  -->
+  <select
+    name="category_id"
+    onchange="this.form.submit()"
+    class="border p-1 rounded text-sm"
+  >
+    <option value="">すべてのカテゴリ</option>
+    {% for c in categories %}
+      <option
+        value="{{ c.id }}"
+        {% if category_id == c.id %}selected{% endif %}
+      >
+        {{ c.name }}
+      </option>
+    {% endfor %}
+  </select>
+
+  <!-- ======================= -->
+  <!-- トピック絞り込み -->
+  <!-- ======================= -->
+  <!--
+    トピック選択用セレクトボックス
+    ・カテゴリとは独立して選択可能
+    ・変更時に即フォーム送信
+  -->
+  <select
+    name="topic_id"
+    onchange="this.form.submit()"
+    class="border p-1 rounded text-sm"
+  >
+    <option value="">すべてのトピック</option>
+    {% for t in topics %}
+      <option
+        value="{{ t.id }}"
+        {% if topic_id == t.id %}selected{% endif %}
+      >
+        {{ t.name }}
+      </option>
+    {% endfor %}
+  </select>
+
+  <!-- ======================= -->
+  <!-- グループ絞り込み -->
+  <!-- ======================= -->
+  <!--
+    グループ選択用セレクトボックス
+    ・最も細かい分類
+    ・変更時に即フォーム送信
+  -->
+  <select
+    name="group_id"
+    onchange="this.form.submit()"
+    class="border p-1 rounded text-sm"
+  >
+    <option value="">すべてのグループ</option>
+    {% for g in groups %}
+      <option
+        value="{{ g.id }}"
+        {% if group_id == g.id %}selected{% endif %}
+      >
+        {{ g.name }}
+      </option>
+    {% endfor %}
+  </select>
+
+</form>

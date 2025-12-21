@@ -1,0 +1,45 @@
+<div class="flex justify-center gap-4 mt-6 items-center">
+
+  <!-- ======================= -->
+  <!-- 前ページリンク -->
+  <!-- ======================= -->
+  <!--
+    現在ページが 2 以上の場合のみ表示
+    ・query_params で検索条件 / 並び替え / 絞り込みを保持
+    ・page だけを 1 つ戻す
+  -->
+  {% if page > 1 %}
+    <a
+      href="?{{ query_params | urlencode }}&page={{ page - 1 }}"
+      class="text-blue-500 hover:underline"
+    >
+      ← 前へ
+    </a>
+  {% endif %}
+
+  <!-- ======================= -->
+  <!-- 現在ページ / 総ページ数 -->
+  <!-- ======================= -->
+  <!--
+    ページネーションの現在位置をユーザーに明示
+    例：3 / 10
+  -->
+  <span>{{ page }} / {{ total_pages }}</span>
+
+  <!-- ======================= -->
+  <!-- 次ページリンク -->
+  <!-- ======================= -->
+  <!--
+    現在ページが最終ページ未満の場合のみ表示
+    ・query_params を保持したまま page を 1 つ進める
+  -->
+  {% if page < total_pages %}
+    <a
+      href="?{{ query_params | urlencode }}&page={{ page + 1 }}"
+      class="text-blue-500 hover:underline"
+    >
+      次へ →
+    </a>
+  {% endif %}
+
+</div>
