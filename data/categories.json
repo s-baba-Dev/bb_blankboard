@@ -1,0 +1,137 @@
+{
+  "categories": [
+    {
+      "id": 1,
+      "name": "技術"
+    },
+    {
+      "id": 2,
+      "name": "勉強"
+    },
+    {
+      "id": 3,
+      "name": "日常"
+    },
+    {
+      "id": 4,
+      "name": "ダイエット"
+    },
+    {
+      "id": 5,
+      "name": "投資"
+    },
+    {
+      "id": 6,
+      "name": "どうでもいい"
+    }
+  ],
+  "topics": [
+    {
+      "id": 10,
+      "name": "Python",
+      "category_id": 1
+    },
+    {
+      "id": 11,
+      "name": "Java",
+      "category_id": 1
+    },
+    {
+      "id": 12,
+      "name": "Web開発",
+      "category_id": 1
+    },
+    {
+      "id": 20,
+      "name": "資格勉強",
+      "category_id": 2
+    },
+    {
+      "id": 21,
+      "name": "Java Gold",
+      "category_id": 2
+    },
+    {
+      "id": 22,
+      "name": "Youtube",
+      "category_id": 3
+    },
+    {
+      "id": 23,
+      "name": "食事",
+      "category_id": 4
+    },
+    {
+      "id": 24,
+      "name": "勉強",
+      "category_id": 5
+    },
+    {
+      "id": 25,
+      "name": "メンタル記録",
+      "category_id": 6
+    },
+    {
+      "id": 26,
+      "name": "読書",
+      "category_id": 3
+    }
+  ],
+  "groups": [
+    {
+      "id": 100,
+      "name": "FastAPI 基礎",
+      "topic_id": 10
+    },
+    {
+      "id": 101,
+      "name": "FastAPI 応用",
+      "topic_id": 10
+    },
+    {
+      "id": 110,
+      "name": "Java Gold 対策",
+      "topic_id": 11
+    },
+    {
+      "id": 200,
+      "name": "基本情報まとめ",
+      "topic_id": 20
+    },
+    {
+      "id": 201,
+      "name": "応用情報まとめ",
+      "topic_id": 20
+    },
+    {
+      "id": 202,
+      "name": "おもろい",
+      "topic_id": 22
+    },
+    {
+      "id": 203,
+      "name": "太った",
+      "topic_id": 23
+    },
+    {
+      "id": 204,
+      "name": "基礎",
+      "topic_id": 24
+    },
+    {
+      "id": 205,
+      "name": "受験",
+      "topic_id": 20
+    },
+    {
+      "id": 206,
+      "name": "なんでも",
+      "topic_id": 25
+    },
+    {
+      "id": 207,
+      "name": "ぬに",
+      "topic_id": 26
+    }
+  ]
+}
